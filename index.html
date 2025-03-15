@@ -11,7 +11,7 @@
         margin: 0;
         padding: 0;
         height: 100%;
-        font-family: Arial, sans-serif;
+        font-family: "Arial", sans-serif;
         background-color: rgb(30, 30, 47);
         color: white;
         overflow: hidden;
@@ -637,6 +637,7 @@
         color: white;
         font-size: 16px;
         text-align: center;
+        pointer-events: none; /* Запрет на редактирование */
       }
 
       .promo-panel button {
@@ -716,12 +717,56 @@
           transform: translateX(0);
         }
       }
+
+      /* Панель с количеством пользователей */
+      .user-count-panel {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        background-color: rgba(41, 41, 63, 0.8);
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-family: "Arial", sans-serif;
+        font-weight: bold;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .user-count-panel img {
+        width: 20px;
+        height: 20px;
+      }
+
+      /* Адаптация под телефоны и планшеты */
+      @media (max-width: 768px) {
+        .container {
+          width: 100%;
+          max-width: 450px;
+        }
+
+        .top-panel,
+        .bottom-panel,
+        .vertical-buttons,
+        .panel-switcher {
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        .side-panel,
+        .store-screen {
+          width: 90%;
+          max-width: 400px;
+        }
+      }
     </style>
   </head>
   <body>
     <!-- Затемненный экран при старте -->
     <div class="start-screen" id="start-screen">
-      <img src="images/txt.png" alt="TXT Image" />
+      <img src="txt.png" alt="TXT Image" />
       <div class="afk-text">Фарм в AFK: <span id="afk-coins">0</span></div>
       <button id="collect-button">Забрать</button>
     </div>
@@ -733,21 +778,23 @@
 
       <!-- Кнопка меню -->
       <img
-        src="images/menu.png"
+        src="menu.png"
         alt="Menu"
         class="menu-button"
         id="menu-button"
       />
 
       <!-- Выдвижная панель -->
-      <div class="side-panel" id="side-panel"></div>
+      <div class="side-panel" id="side-panel">
+        <div class="user-count">Пользователей онлайн: <span id="user-count">0</span></div>
+      </div>
 
       <!-- Затемнение фона -->
       <div class="overlay" id="overlay"></div>
 
       <!-- Панель с энергией -->
       <div class="energy-panel">
-        <img src="images/energy.png" alt="Energy" />
+        <img src="energy.png" alt="Energy" />
         <div class="energy-text" id="energy-text">500/500</div>
       </div>
 
@@ -760,16 +807,16 @@
       </div>
 
       <!-- Изображение txt.png выше круга -->
-      <img src="images/txt.png" alt="TXT Image" class="txt-image" />
+      <img src="txt.png" alt="TXT Image" class="txt-image" />
 
       <!-- Круг по центру -->
       <div class="circle">
-        <img src="images/lion.png" alt="Lion" />
+        <img src="lion.png" alt="Lion" />
       </div>
 
       <!-- Панель с монетками над кругом -->
       <div class="coin-panel" id="coin-panel">
-        <img src="images/money.png" alt="Coins" />
+        <img src="money.png" alt="Coins" />
         <span id="coin-count">0</span>
       </div>
 
@@ -787,15 +834,15 @@
       <!-- Вертикальные кнопки -->
       <div class="vertical-buttons">
         <div class="left-buttons">
-          <button><img src="images/button1.png" alt="Button 1" /></button>
-          <button><img src="images/button2.png" alt="Button 2" /></button>
-          <button><img src="images/button3.png" alt="Button 3" /></button>
+          <button><img src="button1.png" alt="Button 1" /></button>
+          <button><img src="button2.png" alt="Button 2" /></button>
+          <button><img src="button3.png" alt="Button 3" /></button>
         </div>
         <div class="right-buttons">
-          <button><img src="images/button4.png" alt="Button 4" /></button>
-          <button><img src="images/button5.png" alt="Button 5" /></button>
+          <button><img src="button4.png" alt="Button 4" /></button>
+          <button><img src="button5.png" alt="Button 5" /></button>
           <button id="store-button">
-            <img src="images/store.png" alt="Store" />
+            <img src="store.png" alt="Store" />
           </button>
         </div>
       </div>
@@ -803,31 +850,35 @@
       <!-- Нижняя панель -->
       <div class="bottom-panel">
         <button class="bottom-panel-button">
-          <img src="images/tap.png" alt="Tap" />
+          <img src="tap.png" alt="Tap" />
         </button>
         <button class="bottom-panel-button">
-          <img src="images/wallet.png" alt="Wallet" />
+          <img src="wallet.png" alt="Wallet" />
         </button>
         <button class="bottom-panel-button">
-          <img src="images/friend.png" alt="Friend" />
+          <img src="friend.png" alt="Friend" />
         </button>
         <button class="bottom-panel-button" id="store-button-bottom">
-          <img src="images/store.png" alt="Store" />
+          <img src="store.png" alt="Store" />
         </button>
       </div>
 
       <!-- Панели с промокодами -->
       <div class="promo-panel" id="promo-panel">
-        <img src="images/discount.png" alt="Discount" />
-        <input type="text" id="promo-code" placeholder="Введите промокод" />
-        <button id="apply-promo">Принять</button>
+        <img src="discount.png" alt="Discount" />
+        <input type="text" id="referral-code" placeholder="Реферальная ссылка" readonly />
+        <button id="copy-referral">Скопировать</button>
       </div>
 
       <!-- Переключатели панелей -->
       <div class="panel-switcher">
         <div class="dot active"></div>
         <div class="dot"></div>
-        <div class="dot"></div>
+      </div>
+
+      <!-- Панель с количеством пользователей -->
+      <div class="user-count-panel">
+        <span id="user-count">0</span>
       </div>
     </div>
 
@@ -836,7 +887,7 @@
       <h1>New Level!</h1>
       <div class="reward">
         <span id="level-reward">0</span>
-        <img src="images/money.png" alt="Coins" />
+        <img src="money.png" alt="Coins" />
       </div>
       <button id="level-up-button">Забрать</button>
     </div>
@@ -876,13 +927,13 @@
 
     <!-- Аудио для фоновой музыки -->
     <audio id="background-music" loop>
-      <source src="music/f.mp3" type="audio/mpeg" />
+      <source src="f.mp3" type="audio/mpeg" />
       Ваш браузер не поддерживает аудио.
     </audio>
 
     <!-- Аудио для звука кликов -->
     <audio id="click-sound">
-      <source src="music/c.mp3" type="audio/mpeg" />
+      <source src="c.mp3" type="audio/mpeg" />
       Ваш браузер не поддерживает аудио.
     </audio>
 
@@ -1039,7 +1090,7 @@
           clickSound.play(); // Воспроизведение звука клика
           clickCount++;
           if (clickCount === 2) {
-            energy -= 1;
+            energy -= 4; // Снимаем 4 энергии за клик
             clickCount = 0;
             energyText.textContent = `${energy}/${energyCapacity}`;
             energyText.style.color = energy === 0 ? "red" : "white";
@@ -1060,7 +1111,7 @@
             moneyEffect.classList.add("money-effect");
 
             const moneyImage = document.createElement("img");
-            moneyImage.src = "images/money.png";
+            moneyImage.src = "money.png";
             moneyEffect.appendChild(moneyImage);
 
             const plusOne = document.createElement("div");
@@ -1100,7 +1151,7 @@
           coinEffect.style.animation = "afk-coin-fly 1s ease-out forwards";
 
           const moneyImage = document.createElement("img");
-          moneyImage.src = "images/money.png";
+          moneyImage.src = "money.png";
           coinEffect.appendChild(moneyImage);
 
           const plusOne = document.createElement("div");
@@ -1323,42 +1374,23 @@
         }, 300000);
       }
 
-      // Промокоды
-      const promoCodeInput = document.getElementById("promo-code");
-      const applyPromoButton = document.getElementById("apply-promo");
-      const usedPromoCodes = JSON.parse(localStorage.getItem("usedPromoCodes")) || [];
+      // Реферальная система
+      const referralCodeInput = document.getElementById("referral-code");
+      const copyReferralButton = document.getElementById("copy-referral");
 
-      applyPromoButton.addEventListener("click", async () => {
-        const promoCode = promoCodeInput.value.trim();
-        if (usedPromoCodes.includes(promoCode)) {
-          showCustomNotification("Вы уже вводили этот промокод!", "error");
-          return;
-        }
+      // Генерация уникального UID
+      const uid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const referralLink = `https://zifixs.vercel.app/?ref=${uid}`;
 
-        const result = await checkPromoCode(promoCode);
-        if (result.valid) {
-          coins += parseInt(result.value);
-          coinCount.textContent = coins;
-          localStorage.setItem("coins", coins);
-          usedPromoCodes.push(promoCode);
-          localStorage.setItem("usedPromoCodes", JSON.stringify(usedPromoCodes));
-          showCustomNotification(`Промокод применен! Получено ${result.value} монет.`, "success");
-        } else {
-          showCustomNotification("Неверный или истекший промокод!", "error");
-        }
+      // Установка реферальной ссылки в поле
+      referralCodeInput.value = referralLink;
+
+      // Копирование реферальной ссылки
+      copyReferralButton.addEventListener("click", () => {
+        navigator.clipboard.writeText(referralLink).then(() => {
+          showCustomNotification("Реферальная ссылка скопирована!", "success");
+        });
       });
-
-      // Проверка промокода через API
-      async function checkPromoCode(code) {
-        try {
-          const response = await fetch(`http://localhost:3000/check-promo/${code}`);
-          const data = await response.json();
-          return data;
-        } catch (error) {
-          console.error("Ошибка при проверке промокода:", error);
-          return { valid: false };
-        }
-      }
 
       // Показ кастомных уведомлений
       function showCustomNotification(message, type) {
