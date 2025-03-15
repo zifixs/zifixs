@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Главная страница</title>
+    <style>
+      /* Общие стили */
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: Arial, sans-serif;
+        background-color: rgb(30, 30, 47);
+        color: white;
+        overflow: hidden;
+        user-select: none;
+      }
+
+      /* Контейнер для ограниченной области */
+      .container {
+        width: 450px;
+        margin: 0 auto;
+        height: 100%;
+        position: relative;
+      }
+
+      /* Верхняя панель */
+      .top-panel {
+        position: fixed;
+        top: 0;
+        left: calc(50% - 225px);
+        width: 450px;
+        height: 50px;
+        background-color: rgb(41, 41, 63);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        z-index: 2;
+      }
+
+      /* Кнопка меню */
+      .menu-button {
+        position: fixed;
+        top: 10px;
+        left: calc((100% - 450px) / 2 + 10px);
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        z-index: 6;
+      }
+
+      /* Выдвижная панель */
+      .side-panel {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        max-width: 400px;
+        height: 60%;
+        background-color: rgb(41, 41, 63);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        border-radius: 15px;
+        z-index: 5;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+
+      /* Затемнение фона */
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 4;
+        display: none;
+      }
+
+      /* Круг по центру */
+      .circle {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 250px;
+        height: 250px;
+        background-color: rgb(255, 223, 0);
+        border-radius: 50%;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+      }
+
+      .circle:active {
+        transform: translate(-50%, -50%) scale(0.95);
+        box-shadow: 0 0 30px rgba(255, 223, 0, 0.8);
+      }
+
+      /* Контейнер для денег и текста */
+      .money-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 3;
+      }
+
+      .money-effect {
+        position: absolute;
+        animation: float 1s ease-out forwards;
+      }
+
+      .money-effect img {
+        width: 30px;
+        height: 30px;
+      }
+
+      .money-effect .plus-one {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 16px;
+        color: white;
+        animation: float-text 1s ease-out forwards;
+      }
+
+      @keyframes float {
+        0% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+      }
+
+      @keyframes float-text {
+        0% {
+          opacity: 1;
+          transform: translate(-50%, 0);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50px);
+        }
+      }
+
+      /* Контент */
+      .content {
+        position: relative;
+        width: 450px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+        font-size: 14px;
+        z-index: 1;
+        margin-top: 60px;
+      }
+
+      /* Нижняя панель */
+      .bottom-panel {
+        position: fixed;
+        bottom: 20px;
+        left: calc(50% - 200px);
+        width: 400px;
+        height: 80px;
+        background-color: rgb(41, 41, 63);
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+        border-radius: 15px;
+        z-index: 2;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 10px;
+      }
+
+      .bottom-panel-button {
+        width: 60px;
+        height: 60px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+      }
+
+      .bottom-panel-button:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
+      }
+
+      .bottom-panel-button img {
+        width: 40px;
+        height: 40px;
+      }
+
+      /* Панель с энергией */
+      .energy-panel {
+        position: fixed;
+        top: 70px;
+        left: calc((100% - 450px) / 2 + 10px);
+        width: 120px;
+        height: 40px;
+        background-color: rgb(41, 41, 63);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 10px;
+        gap: 8px;
+      }
+
+      .energy-panel img {
+        width: 20px;
+        height: 20px;
+      }
+
+      .energy-panel .energy-text {
+        font-size: 16px;
+        color: white;
+        font-family: "Arial", sans-serif;
+        font-weight: bold;
+      }
+
+      /* Панель с уровнем */
+      .level-panel {
+        position: fixed;
+        top: 70px;
+        right: calc((100% - 450px) / 2 + 10px);
+        width: 120px;
+        height: 40px;
+        background-color: rgb(41, 41, 63);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 10px;
+        gap: 8px;
+      }
+
+      .level-panel .level-text {
+        font-size: 16px;
+        color: white;
+        font-family: "Arial", sans-serif;
+        font-weight: bold;
+      }
+
+      .level-panel .progress-bar {
+        width: 100%;
+        height: 6px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      .level-panel .progress-bar-fill {
+        height: 100%;
+        background-color: #ffdd00;
+        transition: width 0.3s ease;
+      }
+
+      /* Панель с монетками над кругом */
+      .coin-panel {
+        position: fixed;
+        top: calc(50% - 180px);
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(41, 41, 63, 0.9);
+        padding: 10px 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 16px;
+        color: white;
+        font-family: "Arial", sans-serif;
+        font-weight: bold;
+      }
+
+      .coin-panel img {
+        width: 20px;
+        height: 20px;
+      }
+
+      /* Уведомление */
+      .notification {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 0, 0, 0.8);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 16px;
+        z-index: 4;
+        animation: fadeInOut 3s ease-in-out forwards;
+        display: none;
+      }
+
+      @keyframes fadeInOut {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.9);
+        }
+        10% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        90% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.9);
+        }
+      }
+
+      /* Затемненный экран при старте */
+      .start-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .start-screen img {
+        width: 600px;
+        height: auto;
+        margin-top: -600px;
+      }
+
+      .start-screen .afk-text {
+        font-size: 24px;
+        color: white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .start-screen button {
+        background-color: #ffdd00;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 18px;
+        font-family: "Arial", sans-serif;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 0 10px #ffdd00;
+        position: fixed;
+        bottom: 20px;
+      }
+
+      .start-screen button:hover {
+        background-color: #ffcc00;
+      }
+
+      /* Изображение txt.png выше круга */
+      .txt-image {
+        position: fixed;
+        top: calc(50% - 350px);
+        left: 50%;
+        transform: translateX(-50%);
+        width: 400px;
+        height: auto;
+        z-index: 2;
+      }
+
+      /* Анимация нового уровня */
+      .level-up-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transform: translateY(-100%);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+
+      .level-up-screen.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .level-up-screen h1 {
+        font-size: 48px;
+        color: #ffdd00;
+        margin-bottom: 20px;
+      }
+
+      .level-up-screen .reward {
+        font-size: 24px;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .level-up-screen .reward img {
+        width: 30px;
+        height: 30px;
+      }
+
+      .level-up-screen button {
+        background-color: #ffdd00;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 18px;
+        font-family: "Arial", sans-serif;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        box-shadow: 0 0 10px #ffdd00;
+        margin-top: 20px;
+      }
+
+      .level-up-screen button:hover {
+        background-color: #ffcc00;
+      }
+
+      /* Конфетти */
+      .confetti {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 7;
+      }
+
+      .confetti-piece {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: #ffdd00;
+        animation: confetti-fall 2s ease-out infinite;
+      }
+
+      @keyframes confetti-fall {
+        0% {
+          transform: translateY(-100%) rotate(0deg);
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+        }
+      }
+
+      /* Вертикальные кнопки */
+      .vertical-buttons {
+        position: fixed;
+        bottom: 120px;
+        left: calc(50% - 225px);
+        width: 450px;
+        display: flex;
+        justify-content: space-between;
+        z-index: 2;
+      }
+
+      .vertical-buttons .left-buttons,
+      .vertical-buttons .right-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .vertical-buttons button {
+        width: 60px;
+        height: 60px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+      }
+
+      .vertical-buttons button:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: scale(1.1);
+      }
+
+      .vertical-buttons button img {
+        width: 30px;
+        height: 30px;
+      }
+
+      /* Плавные переходы */
+      body {
+        transition: opacity 0.5s ease;
+      }
+
+      /* Стили для магазина */
+      .store-screen {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 400px;
+        background-color: rgba(41, 41, 63, 0.95);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        z-index: 10;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+
+      .store-screen.active {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .upgrade-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .upgrade-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(255, 223, 0, 0.5);
+      }
+
+      .upgrade-item button {
+        background-color: #ffdd00;
+        color: black;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .upgrade-item button:hover {
+        background-color: #ffcc00;
+      }
+
+      #close-store-button {
+        background-color: #ffdd00;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: background-color 0.3s ease;
+      }
+
+      #close-store-button:hover {
+        background-color: #ffcc00;
+      }
+
+      /* Панели с промокодами */
+      .promo-panel {
+        position: fixed;
+        bottom: 120px;
+        left: calc(50% - 150px);
+        width: 300px;
+        height: 120px;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        gap: 10px;
+      }
+
+      .promo-panel input {
+        width: 80%;
+        padding: 10px;
+        border: none;
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 16px;
+        text-align: center;
+      }
+
+      .promo-panel button {
+        background-color: #ffdd00;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+      }
+
+      .promo-panel button:hover {
+        background-color: #ffcc00;
+      }
+
+      .promo-panel img {
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      /* Переключатели панелей */
+      .panel-switcher {
+        position: fixed;
+        bottom: 100px;
+        left: calc(50% - 225px);
+        width: 450px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        z-index: 2;
+      }
+
+      .panel-switcher .dot {
+        width: 10px;
+        height: 10px;
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .panel-switcher .dot.active {
+        background-color: #ffdd00;
+      }
+
+      /* Уведомления */
+      .custom-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 16px;
+        z-index: 10;
+        animation: slideIn 0.5s ease-out forwards;
+      }
+
+      .custom-notification.success {
+        background-color: rgba(0, 255, 0, 0.8);
+      }
+
+      .custom-notification.error {
+        background-color: rgba(255, 0, 0, 0.8);
+      }
+
+      @keyframes slideIn {
+        0% {
+          transform: translateX(100%);
+        }
+        100% {
+          transform: translateX(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Затемненный экран при старте -->
+    <div class="start-screen" id="start-screen">
+      <img src="images/txt.png" alt="TXT Image" />
+      <div class="afk-text">Фарм в AFK: <span id="afk-coins">0</span></div>
+      <button id="collect-button">Забрать</button>
+    </div>
+
+    <!-- Контейнер для ограниченной области -->
+    <div class="container">
+      <!-- Верхняя панель -->
+      <div class="top-panel"></div>
+
+      <!-- Кнопка меню -->
+      <img
+        src="menu.png"
+        alt="Menu"
+        class="menu-button"
+        id="menu-button"
+      />
+
+      <!-- Выдвижная панель -->
+      <div class="side-panel" id="side-panel"></div>
+
+      <!-- Затемнение фона -->
+      <div class="overlay" id="overlay"></div>
+
+      <!-- Панель с энергией -->
+      <div class="energy-panel">
+        <img src="energy.png" alt="Energy" />
+        <div class="energy-text" id="energy-text">500/500</div>
+      </div>
+
+      <!-- Панель с уровнем -->
+      <div class="level-panel">
+        <div class="level-text" id="level-text">Ур. 1</div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill" id="progress-bar-fill"></div>
+        </div>
+      </div>
+
+      <!-- Изображение txt.png выше круга -->
+      <img src="images/txt.png" alt="TXT Image" class="txt-image" />
+
+      <!-- Круг по центру -->
+      <div class="circle">
+        <img src="images/lion.png" alt="Lion" />
+      </div>
+
+      <!-- Панель с монетками над кругом -->
+      <div class="coin-panel" id="coin-panel">
+        <img src="images/money.png" alt="Coins" />
+        <span id="coin-count">0</span>
+      </div>
+
+      <!-- Контейнер для денег и текста -->
+      <div class="money-container" id="money-container"></div>
+
+      <!-- Уведомление -->
+      <div class="notification" id="notification">
+        The energy is out, please wait
+      </div>
+
+      <!-- Контент -->
+      <div class="content"></div>
+
+      <!-- Вертикальные кнопки -->
+      <div class="vertical-buttons">
+        <div class="left-buttons">
+          <button><img src="images/button1.png" alt="Button 1" /></button>
+          <button><img src="images/button2.png" alt="Button 2" /></button>
+          <button><img src="images/button3.png" alt="Button 3" /></button>
+        </div>
+        <div class="right-buttons">
+          <button><img src="images/button4.png" alt="Button 4" /></button>
+          <button><img src="images/button5.png" alt="Button 5" /></button>
+          <button id="store-button">
+            <img src="images/store.png" alt="Store" />
+          </button>
+        </div>
+      </div>
+
+      <!-- Нижняя панель -->
+      <div class="bottom-panel">
+        <button class="bottom-panel-button">
+          <img src="images/tap.png" alt="Tap" />
+        </button>
+        <button class="bottom-panel-button">
+          <img src="images/wallet.png" alt="Wallet" />
+        </button>
+        <button class="bottom-panel-button">
+          <img src="images/friend.png" alt="Friend" />
+        </button>
+        <button class="bottom-panel-button" id="store-button-bottom">
+          <img src="images/store.png" alt="Store" />
+        </button>
+      </div>
+
+      <!-- Панели с промокодами -->
+      <div class="promo-panel" id="promo-panel">
+        <img src="discount.png" alt="Discount" />
+        <input type="text" id="promo-code" placeholder="Введите промокод" />
+        <button id="apply-promo">Принять</button>
+      </div>
+
+      <!-- Переключатели панелей -->
+      <div class="panel-switcher">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+    <!-- Анимация нового уровня -->
+    <div class="level-up-screen" id="level-up-screen">
+      <h1>New Level!</h1>
+      <div class="reward">
+        <span id="level-reward">0</span>
+        <img src="images/money.png" alt="Coins" />
+      </div>
+      <button id="level-up-button">Забрать</button>
+    </div>
+
+    <!-- Конфетти -->
+    <div class="confetti" id="confetti"></div>
+
+    <!-- Магазин -->
+    <div class="store-screen" id="store-screen">
+      <h2>Магазин улучшений</h2>
+      <div class="upgrade-item">
+        <span>Увеличить заработок за клик (Ур. <span id="click-level">1</span>)</span>
+        <button id="upgrade-click">Купить (<span id="click-cost">100</span>)</button>
+      </div>
+      <div class="upgrade-item">
+        <span>Автоклик на 60 секунд (Ур. <span id="autoclick-level">1</span>)</span>
+        <button id="upgrade-autoclick">Купить (<span id="autoclick-cost">200</span>)</button>
+      </div>
+      <div class="upgrade-item">
+        <span>Восстановление энергии</span>
+        <button id="upgrade-energy">Купить (<span id="energy-cost">150</span>)</button>
+      </div>
+      <div class="upgrade-item">
+        <span>Увеличить энергию (Ур. <span id="energy-capacity-level">1</span>)</span>
+        <button id="upgrade-energy-capacity">Купить (<span id="energy-capacity-cost">300</span>)</button>
+      </div>
+      <div class="upgrade-item">
+        <span>Увеличить AFK фарм (Ур. <span id="afk-level">1</span>)</span>
+        <button id="upgrade-afk">Купить (<span id="afk-cost">250</span>)</button>
+      </div>
+      <div class="upgrade-item" id="x10-upgrade" style="display: none;">
+        <span>X10 на 5 минут (Ур. <span id="x10-level">30</span>)</span>
+        <button id="upgrade-x10">Купить (<span id="x10-cost">1000</span>)</button>
+      </div>
+      <button id="close-store-button">Закрыть</button>
+    </div>
+
+    <!-- Аудио для фоновой музыки -->
+    <audio id="background-music" loop>
+      <source src="music/f.mp3" type="audio/mpeg" />
+      Ваш браузер не поддерживает аудио.
+    </audio>
+
+    <!-- Аудио для звука кликов -->
+    <audio id="click-sound">
+      <source src="music/c.mp3" type="audio/mpeg" />
+      Ваш браузер не поддерживает аудио.
+    </audio>
+
+    <script>
+      // Энергия и монетки
+      let energy = parseInt(localStorage.getItem("energy")) || 500;
+      let coins = parseInt(localStorage.getItem("coins")) || 0;
+      let afkCoins = parseInt(localStorage.getItem("afkCoins")) || 0;
+      let clickCount = 0;
+      const energyText = document.getElementById("energy-text");
+      const coinCount = document.getElementById("coin-count");
+      const afkCoinsText = document.getElementById("afk-coins");
+      const circle = document.querySelector(".circle");
+      const moneyContainer = document.getElementById("money-container");
+      const notification = document.getElementById("notification");
+      const coinPanel = document.getElementById("coin-panel");
+      const startScreen = document.getElementById("start-screen");
+      const collectButton = document.getElementById("collect-button");
+      const menuButton = document.getElementById("menu-button");
+      const sidePanel = document.getElementById("side-panel");
+      const overlay = document.getElementById("overlay");
+
+      // Уровень и прогресс
+      let level = parseInt(localStorage.getItem("level")) || 1;
+      let experience = parseInt(localStorage.getItem("experience")) || 0;
+      const levelText = document.getElementById("level-text");
+      const progressBarFill = document.getElementById("progress-bar-fill");
+
+      // Аудио элементы
+      const backgroundMusic = document.getElementById("background-music");
+      const clickSound = document.getElementById("click-sound");
+
+      // Воспроизведение фоновой музыки
+      backgroundMusic.volume = 0.3; // Установка громкости
+      backgroundMusic.play();
+
+      // Опыт для следующего уровня
+      const experienceToNextLevel = (level) => level * 100;
+
+      // Обновление прогресс-бара
+      function updateProgressBar() {
+        const requiredExperience = experienceToNextLevel(level);
+        const progress = (experience / requiredExperience) * 100;
+        progressBarFill.style.width = `${progress}%`;
+      }
+
+      // Проверка на повышение уровня
+      function checkLevelUp() {
+        const requiredExperience = experienceToNextLevel(level);
+        if (experience >= requiredExperience) {
+          level++;
+          experience = 0;
+          localStorage.setItem("level", level);
+          localStorage.setItem("experience", experience);
+          levelText.textContent = `Ур. ${level}`;
+
+          // Награда за уровень
+          const reward = level * 50;
+          coins += reward;
+          coinCount.textContent = coins;
+          localStorage.setItem("coins", coins);
+
+          // Показ анимации нового уровня
+          showLevelUpScreen(reward);
+
+          // Проверка на доступность X10 улучшения
+          if (level >= 30) {
+            document.getElementById("x10-upgrade").style.display = "flex";
+          }
+        }
+        updateProgressBar();
+      }
+
+      // Показ экрана нового уровня
+      function showLevelUpScreen(reward) {
+        const levelUpScreen = document.getElementById("level-up-screen");
+        const levelReward = document.getElementById("level-reward");
+        const confettiContainer = document.getElementById("confetti");
+
+        levelReward.textContent = reward;
+        levelUpScreen.classList.add("active");
+
+        // Добавление конфетти
+        for (let i = 0; i < 100; i++) {
+          const confettiPiece = document.createElement("div");
+          confettiPiece.classList.add("confetti-piece");
+          confettiPiece.style.left = `${Math.random() * 100}vw`;
+          confettiPiece.style.animationDelay = `${Math.random() * 2}s`;
+          confettiContainer.appendChild(confettiPiece);
+        }
+
+        // Удаление конфетти через 3 секунды
+        setTimeout(() => {
+          confettiContainer.innerHTML = "";
+        }, 3000);
+      }
+
+      // Закрытие экрана нового уровня
+      document
+        .getElementById("level-up-button")
+        .addEventListener("click", () => {
+          const levelUpScreen = document.getElementById("level-up-screen");
+          levelUpScreen.classList.remove("active");
+        });
+
+      // Восстановление энергии при загрузке
+      function restoreEnergyOnLoad() {
+        const lastUpdate =
+          parseInt(localStorage.getItem("lastUpdate")) || Date.now();
+        const timePassed = Math.floor((Date.now() - lastUpdate) / 1000);
+        energy = Math.min(energyCapacity, energy + Math.floor(timePassed / 1.5));
+        localStorage.setItem("energy", energy);
+        localStorage.setItem("lastUpdate", Date.now());
+        energyText.textContent = `${energy}/${energyCapacity}`;
+      }
+
+      // Восстановление энергии каждые 1.5 секунды
+      function restoreEnergy() {
+        energy = Math.min(energyCapacity, energy + 1);
+        localStorage.setItem("energy", energy);
+        localStorage.setItem("lastUpdate", Date.now());
+        energyText.textContent = `${energy}/${energyCapacity}`;
+        setTimeout(restoreEnergy, 1500);
+      }
+
+      // Автофарм в AFK
+      function afkFarm() {
+        const lastAfkUpdate =
+          parseInt(localStorage.getItem("lastAfkUpdate")) || Date.now();
+        const timePassed = Math.floor((Date.now() - lastAfkUpdate) / 1000);
+        afkCoins += Math.floor(timePassed / 10) * afkMultiplier; // Прибавляем монетки с учетом множителя
+        localStorage.setItem("afkCoins", afkCoins);
+        localStorage.setItem("lastAfkUpdate", Date.now());
+        afkCoinsText.textContent = afkCoins;
+        setTimeout(afkFarm, 1000);
+      }
+
+      // Анимация подсчета AFK монеток
+      function animateAfkCoins() {
+        let currentAfkCoins = 0;
+        const interval = setInterval(() => {
+          if (currentAfkCoins < afkCoins) {
+            currentAfkCoins++;
+            afkCoinsText.textContent = currentAfkCoins;
+          } else {
+            clearInterval(interval);
+          }
+        }, 50);
+      }
+
+      // Обработчик клика на круг
+      circle.addEventListener("click", () => {
+        if (energy > 0) {
+          clickSound.play(); // Воспроизведение звука клика
+          clickCount++;
+          if (clickCount === 2) {
+            energy -= 1;
+            clickCount = 0;
+            energyText.textContent = `${energy}/${energyCapacity}`;
+            energyText.style.color = energy === 0 ? "red" : "white";
+            localStorage.setItem("energy", energy);
+
+            coins += clickMultiplier;
+            coinCount.textContent = coins;
+            localStorage.setItem("coins", coins);
+
+            experience += 1; // Добавляем опыт за клик
+            localStorage.setItem("experience", experience);
+            checkLevelUp();
+
+            const coinIcon = coinPanel.querySelector("img");
+            coinIcon.style.animation = "coin-bounce 0.3s ease";
+
+            const moneyEffect = document.createElement("div");
+            moneyEffect.classList.add("money-effect");
+
+            const moneyImage = document.createElement("img");
+            moneyImage.src = "images/money.png";
+            moneyEffect.appendChild(moneyImage);
+
+            const plusOne = document.createElement("div");
+            plusOne.classList.add("plus-one");
+            plusOne.textContent = `+${clickMultiplier}`;
+            moneyEffect.appendChild(plusOne);
+
+            const circleRect = circle.getBoundingClientRect();
+            const randomX = Math.random() * 200 - 100;
+            const randomY = Math.random() * 200 - 100;
+            moneyEffect.style.left = `${
+              circleRect.left + circleRect.width / 2 + randomX
+            }px`;
+            moneyEffect.style.top = `${
+              circleRect.top + circleRect.height / 2 + randomY
+            }px`;
+
+            moneyContainer.appendChild(moneyEffect);
+
+            setTimeout(() => {
+              moneyEffect.remove();
+            }, 1000);
+          }
+        } else {
+          notification.style.display = "block";
+          setTimeout(() => {
+            notification.style.display = "none";
+          }, 3000);
+        }
+      });
+
+      // Обработчик кнопки "Забрать"
+      collectButton.addEventListener("click", () => {
+        for (let i = 0; i < afkCoins; i++) {
+          const coinEffect = document.createElement("div");
+          coinEffect.classList.add("money-effect");
+          coinEffect.style.animation = "afk-coin-fly 1s ease-out forwards";
+
+          const moneyImage = document.createElement("img");
+          moneyImage.src = "images/money.png";
+          coinEffect.appendChild(moneyImage);
+
+          const plusOne = document.createElement("div");
+          plusOne.classList.add("plus-one");
+          plusOne.textContent = "+1";
+          coinEffect.appendChild(plusOne);
+
+          const startScreenRect = startScreen.getBoundingClientRect();
+          coinEffect.style.left = `${
+            startScreenRect.left + startScreenRect.width / 2
+          }px`;
+          coinEffect.style.top = `${
+            startScreenRect.top + startScreenRect.height / 2
+          }px`;
+
+          moneyContainer.appendChild(coinEffect);
+
+          setTimeout(() => {
+            coinEffect.remove();
+          }, 1000);
+        }
+
+        coins += afkCoins;
+        coinCount.textContent = coins;
+        localStorage.setItem("coins", coins);
+
+        afkCoins = 0;
+        afkCoinsText.textContent = afkCoins;
+        localStorage.setItem("afkCoins", afkCoins);
+
+        startScreen.style.display = "none";
+      });
+
+      // Обработчик кнопки меню
+      menuButton.addEventListener("click", () => {
+        sidePanel.style.display = "block";
+        overlay.style.display = "block";
+        setTimeout(() => {
+          sidePanel.style.opacity = 1;
+          sidePanel.style.transform = "translate(-50%, -50%) scale(1)";
+        }, 10);
+      });
+
+      // Закрытие панели при клике на пустое место
+      overlay.addEventListener("click", () => {
+        sidePanel.style.opacity = 0;
+        sidePanel.style.transform = "translate(-50%, -50%) scale(0.9)";
+        setTimeout(() => {
+          sidePanel.style.display = "none";
+          overlay.style.display = "none";
+        }, 300);
+      });
+
+      // Открытие магазина
+      document.getElementById("store-button-bottom").addEventListener("click", () => {
+        const storeScreen = document.getElementById("store-screen");
+        storeScreen.style.display = "block";
+        overlay.style.display = "block";
+        setTimeout(() => {
+          storeScreen.style.opacity = 1;
+          storeScreen.style.transform = "translate(-50%, -50%) scale(1)";
+        }, 10);
+      });
+
+      // Закрытие магазина
+      document.getElementById("close-store-button").addEventListener("click", () => {
+        const storeScreen = document.getElementById("store-screen");
+        storeScreen.style.opacity = 0;
+        storeScreen.style.transform = "translate(-50%, -50%) scale(0.9)";
+        setTimeout(() => {
+          storeScreen.style.display = "none";
+          overlay.style.display = "none";
+        }, 300);
+      });
+
+      // Логика улучшений
+      let clickMultiplier = parseInt(localStorage.getItem("clickMultiplier")) || 1;
+      let energyCapacity = parseInt(localStorage.getItem("energyCapacity")) || 500;
+      let afkMultiplier = parseInt(localStorage.getItem("afkMultiplier")) || 1;
+
+      // Уровни и стоимость улучшений
+      let clickLevel = parseInt(localStorage.getItem("clickLevel")) || 1;
+      let autoclickLevel = parseInt(localStorage.getItem("autoclickLevel")) || 1;
+      let energyLevel = parseInt(localStorage.getItem("energyLevel")) || 1;
+      let energyCapacityLevel = parseInt(localStorage.getItem("energyCapacityLevel")) || 1;
+      let afkLevel = parseInt(localStorage.getItem("afkLevel")) || 1;
+
+      // Обновление текста улучшений
+      function updateUpgradeText() {
+        document.getElementById("click-level").textContent = clickLevel;
+        document.getElementById("click-cost").textContent = clickLevel * 100;
+        document.getElementById("autoclick-level").textContent = autoclickLevel;
+        document.getElementById("autoclick-cost").textContent = autoclickLevel * 200;
+        document.getElementById("energy-level").textContent = energyLevel;
+        document.getElementById("energy-cost").textContent = energyLevel * 150;
+        document.getElementById("energy-capacity-level").textContent = energyCapacityLevel;
+        document.getElementById("energy-capacity-cost").textContent = energyCapacityLevel * 300;
+        document.getElementById("afk-level").textContent = afkLevel;
+        document.getElementById("afk-cost").textContent = afkLevel * 250;
+      }
+
+      // Улучшение заработка за клик
+      document.getElementById("upgrade-click").addEventListener("click", () => {
+        const cost = clickLevel * 100;
+        if (coins >= cost) {
+          coins -= cost;
+          clickMultiplier++;
+          clickLevel++;
+          localStorage.setItem("coins", coins);
+          localStorage.setItem("clickMultiplier", clickMultiplier);
+          localStorage.setItem("clickLevel", clickLevel);
+          coinCount.textContent = coins;
+          updateUpgradeText();
+          showCustomNotification("Улучшение куплено! Теперь вы получаете +" + clickMultiplier + " монет за клик.", "success");
+        } else {
+          showCustomNotification("Недостаточно монет!", "error");
+        }
+      });
+
+      // Улучшение автоклика
+      document.getElementById("upgrade-autoclick").addEventListener("click", () => {
+        const cost = autoclickLevel * 200;
+        if (coins >= cost) {
+          coins -= cost;
+          autoclickLevel++;
+          localStorage.setItem("coins", coins);
+          localStorage.setItem("autoclickLevel", autoclickLevel);
+          coinCount.textContent = coins;
+          updateUpgradeText();
+          showCustomNotification("Автоклик активирован на 60 секунд!", "success");
+          startAutoClick();
+        } else {
+          showCustomNotification("Недостаточно монет!", "error");
+        }
+      });
+
+      // Улучшение восстановления энергии
+      document.getElementById("upgrade-energy").addEventListener("click", () => {
+        const cost = energyLevel * 150;
+        if (coins >= cost) {
+          coins -= cost;
+          energy = energyCapacity; // Восстанавливаем всю энергию
+          localStorage.setItem("coins", coins);
+          localStorage.setItem("energy", energy);
+          coinCount.textContent = coins;
+          updateUpgradeText();
+          showCustomNotification("Энергия восстановлена до максимума!", "success");
+        } else {
+          showCustomNotification("Недостаточно монет!", "error");
+        }
+      });
+
+      // Улучшение емкости энергии
+      document.getElementById("upgrade-energy-capacity").addEventListener("click", () => {
+        const cost = energyCapacityLevel * 300;
+        if (coins >= cost) {
+          coins -= cost;
+          energyCapacity += 100;
+          energyCapacityLevel++;
+          localStorage.setItem("coins", coins);
+          localStorage.setItem("energyCapacity", energyCapacity);
+          localStorage.setItem("energyCapacityLevel", energyCapacityLevel);
+          coinCount.textContent = coins;
+          updateUpgradeText();
+          showCustomNotification("Емкость энергии увеличена до " + energyCapacity + "!", "success");
+        } else {
+          showCustomNotification("Недостаточно монет!", "error");
+        }
+      });
+
+      // Улучшение AFK фарма
+      document.getElementById("upgrade-afk").addEventListener("click", () => {
+        const cost = afkLevel * 250;
+        if (coins >= cost) {
+          coins -= cost;
+          afkMultiplier++;
+          afkLevel++;
+          localStorage.setItem("coins", coins);
+          localStorage.setItem("afkMultiplier", afkMultiplier);
+          localStorage.setItem("afkLevel", afkLevel);
+          coinCount.textContent = coins;
+          updateUpgradeText();
+          showCustomNotification("AFK фарм улучшен! Теперь вы получаете " + afkMultiplier + "x монет.", "success");
+        } else {
+          showCustomNotification("Недостаточно монет!", "error");
+        }
+      });
+
+      // X10 улучшение
+      document.getElementById("upgrade-x10").addEventListener("click", () => {
+        const cost = 1000;
+        if (coins >= cost) {
+          coins -= cost;
+          localStorage.setItem("coins", coins);
+          coinCount.textContent = coins;
+          showCustomNotification("X10 активирован на 5 минут!", "success");
+          startX10();
+        } else {
+          showCustomNotification("Недостаточно монет!", "error");
+        }
+      });
+
+      // Автоклик на 60 секунд
+      function startAutoClick() {
+        const circle = document.querySelector(".circle");
+        const interval = setInterval(() => {
+          circle.click();
+        }, 100);
+        setTimeout(() => {
+          clearInterval(interval);
+        }, 60000);
+      }
+
+      // X10 на 5 минут
+      function startX10() {
+        const originalClickMultiplier = clickMultiplier;
+        clickMultiplier *= 10;
+        setTimeout(() => {
+          clickMultiplier = originalClickMultiplier;
+        }, 300000);
+      }
+
+      // Промокоды
+      const promoCodeInput = document.getElementById("promo-code");
+      const applyPromoButton = document.getElementById("apply-promo");
+      const usedPromoCodes = JSON.parse(localStorage.getItem("usedPromoCodes")) || [];
+
+      applyPromoButton.addEventListener("click", async () => {
+        const promoCode = promoCodeInput.value.trim();
+        if (usedPromoCodes.includes(promoCode)) {
+          showCustomNotification("Вы уже вводили этот промокод!", "error");
+          return;
+        }
+
+        const result = await checkPromoCode(promoCode);
+        if (result.valid) {
+          coins += parseInt(result.value);
+          coinCount.textContent = coins;
+          localStorage.setItem("coins", coins);
+          usedPromoCodes.push(promoCode);
+          localStorage.setItem("usedPromoCodes", JSON.stringify(usedPromoCodes));
+          showCustomNotification(`Промокод применен! Получено ${result.value} монет.`, "success");
+        } else {
+          showCustomNotification("Неверный или истекший промокод!", "error");
+        }
+      });
+
+      // Проверка промокода через API
+      async function checkPromoCode(code) {
+        try {
+          const response = await fetch(`http://localhost:3000/check-promo/${code}`);
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.error("Ошибка при проверке промокода:", error);
+          return { valid: false };
+        }
+      }
+
+      // Показ кастомных уведомлений
+      function showCustomNotification(message, type) {
+        const notification = document.createElement("div");
+        notification.classList.add("custom-notification", type);
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.remove();
+        }, 3000);
+      }
+
+      // Запуск функций
+      restoreEnergyOnLoad();
+      restoreEnergy();
+      afkFarm();
+      animateAfkCoins();
+      updateProgressBar();
+      levelText.textContent = `Ур. ${level}`;
+      updateUpgradeText();
+    </script>
+  </body>
+</html>
