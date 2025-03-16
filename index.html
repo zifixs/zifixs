@@ -369,7 +369,10 @@
 
       .start-screen .afk-text {
         font-size: 24px;
-        color: white;
+        color: #ffdd00;
+        font-family: "Arial", sans-serif;
+        font-weight: bold;
+        text-shadow: 2px 2px 0 #ffcc00, 4px 4px 0 #ffbb00, 6px 6px 0 #ffaa00;
         position: absolute;
         top: 50%;
         left: 50%;
@@ -637,7 +640,6 @@
         color: white;
         font-size: 16px;
         text-align: center;
-        pointer-events: none; /* Запрет на редактирование */
       }
 
       .promo-panel button {
@@ -740,6 +742,18 @@
         height: 20px;
       }
 
+      /* Панель с количеством пользователей на боковой панели */
+      .side-panel-user-count {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 10px;
+        border-radius: 10px;
+        font-size: 14px;
+        color: white;
+      }
+
       /* Адаптация под телефоны и планшеты */
       @media (max-width: 768px) {
         .container {
@@ -767,7 +781,7 @@
     <!-- Затемненный экран при старте -->
     <div class="start-screen" id="start-screen">
       <img src="txt.png" alt="TXT Image" />
-      <div class="afk-text">Фарм в AFK: <span id="afk-coins">0</span></div>
+      <div class="afk-text">Доход в AFK: <span id="afk-coins">0</span></div>
       <button id="collect-button">Забрать</button>
     </div>
 
@@ -777,16 +791,14 @@
       <div class="top-panel"></div>
 
       <!-- Кнопка меню -->
-      <img
-        src="menu.png"
-        alt="Menu"
-        class="menu-button"
-        id="menu-button"
-      />
+      <img src="menu.png" alt="Menu" class="menu-button" id="menu-button" />
 
       <!-- Выдвижная панель -->
       <div class="side-panel" id="side-panel">
-        <div class="user-count">Пользователей онлайн: <span id="user-count">0</span></div>
+        <!-- Панель с количеством пользователей -->
+        <div class="side-panel-user-count">
+          Пользователей онлайн: <span id="side-user-count">0</span>
+        </div>
       </div>
 
       <!-- Затемнение фона -->
@@ -834,16 +846,14 @@
       <!-- Вертикальные кнопки -->
       <div class="vertical-buttons">
         <div class="left-buttons">
-          <button><img src="button1.png" alt="Button 1" /></button>
-          <button><img src="button2.png" alt="Button 2" /></button>
-          <button><img src="button3.png" alt="Button 3" /></button>
+          <button><img src="trophy.png" alt="Trophy" /></button>
+          <button><img src="rank.png" alt="Rank" /></button>
+          <button><img src="target.png" alt="Target" /></button>
         </div>
         <div class="right-buttons">
-          <button><img src="button4.png" alt="Button 4" /></button>
-          <button><img src="button5.png" alt="Button 5" /></button>
-          <button id="store-button">
-            <img src="store.png" alt="Store" />
-          </button>
+          <button><img src="business.png" alt="Business" /></button>
+          <button><img src="puzzle.png" alt="Puzzle" /></button>
+          <button><img src="clock.png" alt="Clock" /></button>
         </div>
       </div>
 
@@ -866,18 +876,30 @@
       <!-- Панели с промокодами -->
       <div class="promo-panel" id="promo-panel">
         <img src="discount.png" alt="Discount" />
-        <input type="text" id="referral-code" placeholder="Реферальная ссылка" readonly />
+        <input type="text" id="promo-code" placeholder="Введите промокод" />
+        <button id="apply-promo">Применить</button>
+      </div>
+
+      <!-- Панель с реферальной ссылкой -->
+      <div class="promo-panel" id="referral-panel" style="display: none">
+        <img src="refer.png" alt="Referral" />
+        <input
+          type="text"
+          id="referral-code"
+          placeholder="Ваша реферальная ссылка"
+        />
         <button id="copy-referral">Скопировать</button>
       </div>
 
       <!-- Переключатели панелей -->
       <div class="panel-switcher">
-        <div class="dot active"></div>
-        <div class="dot"></div>
+        <div class="dot active" onclick="showPanel(0)"></div>
+        <div class="dot" onclick="showPanel(1)"></div>
       </div>
 
       <!-- Панель с количеством пользователей -->
       <div class="user-count-panel">
+        <img src="users.png" alt="Users" />
         <span id="user-count">0</span>
       </div>
     </div>
@@ -899,28 +921,48 @@
     <div class="store-screen" id="store-screen">
       <h2>Магазин улучшений</h2>
       <div class="upgrade-item">
-        <span>Увеличить заработок за клик (Ур. <span id="click-level">1</span>)</span>
-        <button id="upgrade-click">Купить (<span id="click-cost">100</span>)</button>
+        <span
+          >Увеличить заработок за клик (Ур.
+          <span id="click-level">1</span>)</span
+        >
+        <button id="upgrade-click">
+          Купить (<span id="click-cost">100</span>)
+        </button>
       </div>
       <div class="upgrade-item">
-        <span>Автоклик на 60 секунд (Ур. <span id="autoclick-level">1</span>)</span>
-        <button id="upgrade-autoclick">Купить (<span id="autoclick-cost">200</span>)</button>
+        <span
+          >Автоклик на 60 секунд (Ур. <span id="autoclick-level">1</span>)</span
+        >
+        <button id="upgrade-autoclick">
+          Купить (<span id="autoclick-cost">200</span>)
+        </button>
       </div>
       <div class="upgrade-item">
         <span>Восстановление энергии</span>
-        <button id="upgrade-energy">Купить (<span id="energy-cost">150</span>)</button>
+        <button id="upgrade-energy">
+          Купить (<span id="energy-cost">150</span>)
+        </button>
       </div>
       <div class="upgrade-item">
-        <span>Увеличить энергию (Ур. <span id="energy-capacity-level">1</span>)</span>
-        <button id="upgrade-energy-capacity">Купить (<span id="energy-capacity-cost">300</span>)</button>
+        <span
+          >Увеличить энергию (Ур.
+          <span id="energy-capacity-level">1</span>)</span
+        >
+        <button id="upgrade-energy-capacity">
+          Купить (<span id="energy-capacity-cost">300</span>)
+        </button>
       </div>
       <div class="upgrade-item">
         <span>Увеличить AFK фарм (Ур. <span id="afk-level">1</span>)</span>
-        <button id="upgrade-afk">Купить (<span id="afk-cost">250</span>)</button>
+        <button id="upgrade-afk">
+          Купить (<span id="afk-cost">250</span>)
+        </button>
       </div>
-      <div class="upgrade-item" id="x10-upgrade" style="display: none;">
+      <div class="upgrade-item" id="x10-upgrade" style="display: none">
         <span>X10 на 5 минут (Ур. <span id="x10-level">30</span>)</span>
-        <button id="upgrade-x10">Купить (<span id="x10-cost">1000</span>)</button>
+        <button id="upgrade-x10">
+          Купить (<span id="x10-cost">1000</span>)
+        </button>
       </div>
       <button id="close-store-button">Закрыть</button>
     </div>
@@ -1044,7 +1086,10 @@
         const lastUpdate =
           parseInt(localStorage.getItem("lastUpdate")) || Date.now();
         const timePassed = Math.floor((Date.now() - lastUpdate) / 1000);
-        energy = Math.min(energyCapacity, energy + Math.floor(timePassed / 1.5));
+        energy = Math.min(
+          energyCapacity,
+          energy + Math.floor(timePassed / 1.5)
+        );
         localStorage.setItem("energy", energy);
         localStorage.setItem("lastUpdate", Date.now());
         energyText.textContent = `${energy}/${energyCapacity}`;
@@ -1145,35 +1190,6 @@
 
       // Обработчик кнопки "Забрать"
       collectButton.addEventListener("click", () => {
-        for (let i = 0; i < afkCoins; i++) {
-          const coinEffect = document.createElement("div");
-          coinEffect.classList.add("money-effect");
-          coinEffect.style.animation = "afk-coin-fly 1s ease-out forwards";
-
-          const moneyImage = document.createElement("img");
-          moneyImage.src = "money.png";
-          coinEffect.appendChild(moneyImage);
-
-          const plusOne = document.createElement("div");
-          plusOne.classList.add("plus-one");
-          plusOne.textContent = "+1";
-          coinEffect.appendChild(plusOne);
-
-          const startScreenRect = startScreen.getBoundingClientRect();
-          coinEffect.style.left = `${
-            startScreenRect.left + startScreenRect.width / 2
-          }px`;
-          coinEffect.style.top = `${
-            startScreenRect.top + startScreenRect.height / 2
-          }px`;
-
-          moneyContainer.appendChild(coinEffect);
-
-          setTimeout(() => {
-            coinEffect.remove();
-          }, 1000);
-        }
-
         coins += afkCoins;
         coinCount.textContent = coins;
         localStorage.setItem("coins", coins);
@@ -1206,37 +1222,45 @@
       });
 
       // Открытие магазина
-      document.getElementById("store-button-bottom").addEventListener("click", () => {
-        const storeScreen = document.getElementById("store-screen");
-        storeScreen.style.display = "block";
-        overlay.style.display = "block";
-        setTimeout(() => {
-          storeScreen.style.opacity = 1;
-          storeScreen.style.transform = "translate(-50%, -50%) scale(1)";
-        }, 10);
-      });
+      document
+        .getElementById("store-button-bottom")
+        .addEventListener("click", () => {
+          const storeScreen = document.getElementById("store-screen");
+          storeScreen.style.display = "block";
+          overlay.style.display = "block";
+          setTimeout(() => {
+            storeScreen.style.opacity = 1;
+            storeScreen.style.transform = "translate(-50%, -50%) scale(1)";
+          }, 10);
+        });
 
       // Закрытие магазина
-      document.getElementById("close-store-button").addEventListener("click", () => {
-        const storeScreen = document.getElementById("store-screen");
-        storeScreen.style.opacity = 0;
-        storeScreen.style.transform = "translate(-50%, -50%) scale(0.9)";
-        setTimeout(() => {
-          storeScreen.style.display = "none";
-          overlay.style.display = "none";
-        }, 300);
-      });
+      document
+        .getElementById("close-store-button")
+        .addEventListener("click", () => {
+          const storeScreen = document.getElementById("store-screen");
+          storeScreen.style.opacity = 0;
+          storeScreen.style.transform = "translate(-50%, -50%) scale(0.9)";
+          setTimeout(() => {
+            storeScreen.style.display = "none";
+            overlay.style.display = "none";
+          }, 300);
+        });
 
       // Логика улучшений
-      let clickMultiplier = parseInt(localStorage.getItem("clickMultiplier")) || 1;
-      let energyCapacity = parseInt(localStorage.getItem("energyCapacity")) || 500;
+      let clickMultiplier =
+        parseInt(localStorage.getItem("clickMultiplier")) || 1;
+      let energyCapacity =
+        parseInt(localStorage.getItem("energyCapacity")) || 500;
       let afkMultiplier = parseInt(localStorage.getItem("afkMultiplier")) || 1;
 
       // Уровни и стоимость улучшений
       let clickLevel = parseInt(localStorage.getItem("clickLevel")) || 1;
-      let autoclickLevel = parseInt(localStorage.getItem("autoclickLevel")) || 1;
+      let autoclickLevel =
+        parseInt(localStorage.getItem("autoclickLevel")) || 1;
       let energyLevel = parseInt(localStorage.getItem("energyLevel")) || 1;
-      let energyCapacityLevel = parseInt(localStorage.getItem("energyCapacityLevel")) || 1;
+      let energyCapacityLevel =
+        parseInt(localStorage.getItem("energyCapacityLevel")) || 1;
       let afkLevel = parseInt(localStorage.getItem("afkLevel")) || 1;
 
       // Обновление текста улучшений
@@ -1244,11 +1268,14 @@
         document.getElementById("click-level").textContent = clickLevel;
         document.getElementById("click-cost").textContent = clickLevel * 100;
         document.getElementById("autoclick-level").textContent = autoclickLevel;
-        document.getElementById("autoclick-cost").textContent = autoclickLevel * 200;
+        document.getElementById("autoclick-cost").textContent =
+          autoclickLevel * 200;
         document.getElementById("energy-level").textContent = energyLevel;
         document.getElementById("energy-cost").textContent = energyLevel * 150;
-        document.getElementById("energy-capacity-level").textContent = energyCapacityLevel;
-        document.getElementById("energy-capacity-cost").textContent = energyCapacityLevel * 300;
+        document.getElementById("energy-capacity-level").textContent =
+          energyCapacityLevel;
+        document.getElementById("energy-capacity-cost").textContent =
+          energyCapacityLevel * 300;
         document.getElementById("afk-level").textContent = afkLevel;
         document.getElementById("afk-cost").textContent = afkLevel * 250;
       }
@@ -1265,62 +1292,82 @@
           localStorage.setItem("clickLevel", clickLevel);
           coinCount.textContent = coins;
           updateUpgradeText();
-          showCustomNotification("Улучшение куплено! Теперь вы получаете +" + clickMultiplier + " монет за клик.", "success");
+          showCustomNotification(
+            "Улучшение куплено! Теперь вы получаете +" +
+              clickMultiplier +
+              " монет за клик.",
+            "success"
+          );
         } else {
           showCustomNotification("Недостаточно монет!", "error");
         }
       });
 
       // Улучшение автоклика
-      document.getElementById("upgrade-autoclick").addEventListener("click", () => {
-        const cost = autoclickLevel * 200;
-        if (coins >= cost) {
-          coins -= cost;
-          autoclickLevel++;
-          localStorage.setItem("coins", coins);
-          localStorage.setItem("autoclickLevel", autoclickLevel);
-          coinCount.textContent = coins;
-          updateUpgradeText();
-          showCustomNotification("Автоклик активирован на 60 секунд!", "success");
-          startAutoClick();
-        } else {
-          showCustomNotification("Недостаточно монет!", "error");
-        }
-      });
+      document
+        .getElementById("upgrade-autoclick")
+        .addEventListener("click", () => {
+          const cost = autoclickLevel * 200;
+          if (coins >= cost) {
+            coins -= cost;
+            autoclickLevel++;
+            localStorage.setItem("coins", coins);
+            localStorage.setItem("autoclickLevel", autoclickLevel);
+            coinCount.textContent = coins;
+            updateUpgradeText();
+            showCustomNotification(
+              "Автоклик активирован на 60 секунд!",
+              "success"
+            );
+            startAutoClick();
+          } else {
+            showCustomNotification("Недостаточно монет!", "error");
+          }
+        });
 
       // Улучшение восстановления энергии
-      document.getElementById("upgrade-energy").addEventListener("click", () => {
-        const cost = energyLevel * 150;
-        if (coins >= cost) {
-          coins -= cost;
-          energy = energyCapacity; // Восстанавливаем всю энергию
-          localStorage.setItem("coins", coins);
-          localStorage.setItem("energy", energy);
-          coinCount.textContent = coins;
-          updateUpgradeText();
-          showCustomNotification("Энергия восстановлена до максимума!", "success");
-        } else {
-          showCustomNotification("Недостаточно монет!", "error");
-        }
-      });
+      document
+        .getElementById("upgrade-energy")
+        .addEventListener("click", () => {
+          const cost = energyLevel * 150;
+          if (coins >= cost) {
+            coins -= cost;
+            energy = energyCapacity; // Восстанавливаем всю энергию
+            localStorage.setItem("coins", coins);
+            localStorage.setItem("energy", energy);
+            coinCount.textContent = coins;
+            updateUpgradeText();
+            showCustomNotification(
+              "Энергия восстановлена до максимума!",
+              "success"
+            );
+          } else {
+            showCustomNotification("Недостаточно монет!", "error");
+          }
+        });
 
       // Улучшение емкости энергии
-      document.getElementById("upgrade-energy-capacity").addEventListener("click", () => {
-        const cost = energyCapacityLevel * 300;
-        if (coins >= cost) {
-          coins -= cost;
-          energyCapacity += 100;
-          energyCapacityLevel++;
-          localStorage.setItem("coins", coins);
-          localStorage.setItem("energyCapacity", energyCapacity);
-          localStorage.setItem("energyCapacityLevel", energyCapacityLevel);
-          coinCount.textContent = coins;
-          updateUpgradeText();
-          showCustomNotification("Емкость энергии увеличена до " + energyCapacity + "!", "success");
-        } else {
-          showCustomNotification("Недостаточно монет!", "error");
-        }
-      });
+      document
+        .getElementById("upgrade-energy-capacity")
+        .addEventListener("click", () => {
+          const cost = energyCapacityLevel * 300;
+          if (coins >= cost) {
+            coins -= cost;
+            energyCapacity += 100;
+            energyCapacityLevel++;
+            localStorage.setItem("coins", coins);
+            localStorage.setItem("energyCapacity", energyCapacity);
+            localStorage.setItem("energyCapacityLevel", energyCapacityLevel);
+            coinCount.textContent = coins;
+            updateUpgradeText();
+            showCustomNotification(
+              "Емкость энергии увеличена до " + energyCapacity + "!",
+              "success"
+            );
+          } else {
+            showCustomNotification("Недостаточно монет!", "error");
+          }
+        });
 
       // Улучшение AFK фарма
       document.getElementById("upgrade-afk").addEventListener("click", () => {
@@ -1334,7 +1381,12 @@
           localStorage.setItem("afkLevel", afkLevel);
           coinCount.textContent = coins;
           updateUpgradeText();
-          showCustomNotification("AFK фарм улучшен! Теперь вы получаете " + afkMultiplier + "x монет.", "success");
+          showCustomNotification(
+            "AFK фарм улучшен! Теперь вы получаете " +
+              afkMultiplier +
+              "x монет.",
+            "success"
+          );
         } else {
           showCustomNotification("Недостаточно монет!", "error");
         }
@@ -1379,7 +1431,9 @@
       const copyReferralButton = document.getElementById("copy-referral");
 
       // Генерация уникального UID
-      const uid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const uid =
+        Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
       const referralLink = `https://zifixs.vercel.app/?ref=${uid}`;
 
       // Установка реферальной ссылки в поле
@@ -1403,6 +1457,42 @@
           notification.remove();
         }, 3000);
       }
+
+      // Переключение между панелями
+      function showPanel(index) {
+        const promoPanel = document.getElementById("promo-panel");
+        const referralPanel = document.getElementById("referral-panel");
+        const dots = document.querySelectorAll(".panel-switcher .dot");
+
+        if (index === 0) {
+          promoPanel.style.display = "flex";
+          referralPanel.style.display = "none";
+        } else {
+          promoPanel.style.display = "none";
+          referralPanel.style.display = "flex";
+        }
+
+        dots.forEach((dot, i) => {
+          dot.classList.toggle("active", i === index);
+        });
+      }
+
+      // Обработчик ввода промокода
+      document.getElementById("apply-promo").addEventListener("click", () => {
+        const promoCode = document.getElementById("promo-code").value;
+        if (promoCode === "TEST123") {
+          // Пример промокода
+          coins += 1000;
+          coinCount.textContent = coins;
+          localStorage.setItem("coins", coins);
+          showCustomNotification(
+            "Промокод успешно применен! +1000 монет.",
+            "success"
+          );
+        } else {
+          showCustomNotification("Неверный промокод!", "error");
+        }
+      });
 
       // Запуск функций
       restoreEnergyOnLoad();
