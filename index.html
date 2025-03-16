@@ -20,7 +20,8 @@
 
       /* Контейнер для ограниченной области */
       .container {
-        width: 450px;
+        width: 100%;
+        max-width: 450px;
         margin: 0 auto;
         height: 100%;
         position: relative;
@@ -30,8 +31,10 @@
       .top-panel {
         position: fixed;
         top: 0;
-        left: calc(50% - 225px);
-        width: 450px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 450px;
         height: 50px;
         background-color: rgb(41, 41, 63);
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -42,7 +45,7 @@
       .menu-button {
         position: fixed;
         top: 10px;
-        left: calc((100% - 450px) / 2 + 10px);
+        left: 10px;
         width: 40px;
         height: 40px;
         cursor: pointer;
@@ -167,7 +170,8 @@
       /* Контент */
       .content {
         position: relative;
-        width: 450px;
+        width: 100%;
+        max-width: 450px;
         margin: 0 auto;
         padding: 20px;
         text-align: center;
@@ -180,8 +184,10 @@
       .bottom-panel {
         position: fixed;
         bottom: 20px;
-        left: calc(50% - 200px);
-        width: 400px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 400px;
         height: 80px;
         background-color: rgb(41, 41, 63);
         box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
@@ -220,7 +226,7 @@
       .energy-panel {
         position: fixed;
         top: 70px;
-        left: calc((100% - 450px) / 2 + 10px);
+        left: 10px;
         width: 120px;
         height: 40px;
         background-color: rgb(41, 41, 63);
@@ -250,7 +256,7 @@
       .level-panel {
         position: fixed;
         top: 70px;
-        right: calc((100% - 450px) / 2 + 10px);
+        right: 10px;
         width: 120px;
         height: 40px;
         background-color: rgb(41, 41, 63);
@@ -362,7 +368,8 @@
       }
 
       .start-screen img {
-        width: 600px;
+        width: 100%;
+        max-width: 600px;
         height: auto;
         margin-top: -600px;
       }
@@ -404,7 +411,8 @@
         top: calc(50% - 350px);
         left: 50%;
         transform: translateX(-50%);
-        width: 400px;
+        width: 100%;
+        max-width: 400px;
         height: auto;
         z-index: 2;
       }
@@ -501,8 +509,10 @@
       .vertical-buttons {
         position: fixed;
         bottom: 120px;
-        left: calc(50% - 225px);
-        width: 450px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 450px;
         display: flex;
         justify-content: space-between;
         z-index: 2;
@@ -616,8 +626,10 @@
       .promo-panel {
         position: fixed;
         bottom: 120px;
-        left: calc(50% - 150px);
-        width: 300px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 300px;
         height: 120px;
         background: linear-gradient(135deg, #6a11cb, #2575fc);
         border-radius: 15px;
@@ -661,7 +673,63 @@
         width: 50px;
         height: 50px;
         position: absolute;
-        left: 10px;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      /* Панель с реферальной ссылкой */
+      .referral-panel {
+        position: fixed;
+        bottom: 120px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 300px;
+        height: 120px;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        gap: 10px;
+      }
+
+      .referral-panel input {
+        width: 80%;
+        padding: 10px;
+        border: none;
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 16px;
+        text-align: center;
+      }
+
+      .referral-panel button {
+        background-color: #ffdd00;
+        color: black;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+      }
+
+      .referral-panel button:hover {
+        background-color: #ffcc00;
+      }
+
+      .referral-panel img {
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        right: 10px;
         top: 50%;
         transform: translateY(-50%);
       }
@@ -670,8 +738,10 @@
       .panel-switcher {
         position: fixed;
         bottom: 100px;
-        left: calc(50% - 225px);
-        width: 450px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 450px;
         display: flex;
         justify-content: center;
         gap: 10px;
@@ -875,20 +945,20 @@
 
       <!-- Панели с промокодами -->
       <div class="promo-panel" id="promo-panel">
-        <img src="discount.png" alt="Discount" />
         <input type="text" id="promo-code" placeholder="Введите промокод" />
         <button id="apply-promo">Применить</button>
+        <img src="discount.png" alt="Discount" />
       </div>
 
       <!-- Панель с реферальной ссылкой -->
-      <div class="promo-panel" id="referral-panel" style="display: none">
-        <img src="refer.png" alt="Referral" />
+      <div class="referral-panel" id="referral-panel" style="display: none">
         <input
           type="text"
           id="referral-code"
           placeholder="Ваша реферальная ссылка"
         />
         <button id="copy-referral">Скопировать</button>
+        <img src="refer.png" alt="Referral" />
       </div>
 
       <!-- Переключатели панелей -->
