@@ -13,7 +13,7 @@
     •   Innovative mobile apps 💡
 
 - 📫 Reach me:
-    •   Telegram: @WeXiloxs 💬
+    •   Telegram: @zifixs 💬
 
 - 😄 Pronouns: He/Him
 
